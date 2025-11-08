@@ -35,7 +35,13 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const connection = await db.createAzureConnection({
           userId: ctx.user.id,
-          ...input,
+          name: input.name.trim(),
+          server: input.server.trim(),
+          database: input.database.trim(),
+          username: input.username.trim(),
+          password: input.password.trim(),
+          port: input.port,
+          tableName: input.tableName.trim(),
         });
         return connection;
       }),
@@ -64,7 +70,16 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
-        return await db.updateAzureConnection(id, data);
+        const trimmedData: any = {};
+        if (data.name) trimmedData.name = data.name.trim();
+        if (data.server) trimmedData.server = data.server.trim();
+        if (data.database) trimmedData.database = data.database.trim();
+        if (data.username) trimmedData.username = data.username.trim();
+        if (data.password) trimmedData.password = data.password.trim();
+        if (data.tableName) trimmedData.tableName = data.tableName.trim();
+        if (data.port !== undefined) trimmedData.port = data.port;
+        if (data.isActive !== undefined) trimmedData.isActive = data.isActive;
+        return await db.updateAzureConnection(id, trimmedData);
       }),
 
     delete: protectedProcedure
@@ -83,10 +98,10 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const config = {
-          server: input.server,
-          database: input.database,
-          user: input.username,
-          password: input.password,
+          server: input.server.trim(),
+          database: input.database.trim(),
+          user: input.username.trim(),
+          password: input.password.trim(),
           port: input.port,
           options: {
             encrypt: true,

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE azure_connections SET server = TRIM(server), `database` = TRIM(`database`), username = TRIM(username), tableName = TRIM(tableName), name = TRIM(name)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TYxsobBhgGiaoJ.root --database YbzpRcF2GvdBa5fFrTrv82 --execute UPDATE azure_connections SET server = TRIM(server), `database` = TRIM(`database`), username = TRIM(username), tableName = TRIM(tableName), name = TRIM(name)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 51
+}

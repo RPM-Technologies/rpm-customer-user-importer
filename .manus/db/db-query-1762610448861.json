@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, name, server, `database`, username FROM azure_connections",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TYxsobBhgGiaoJ.root --database YbzpRcF2GvdBa5fFrTrv82 --execute SELECT id, name, server, `database`, username FROM azure_connections",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Azure SQL",
+      "server": " rpm-reporting.database.windows.net",
+      "database": "RPM_Reporting",
+      "username": "RPM_RPT_DW_SVC"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tserver\tdatabase\tusername\n1\tAzure SQL\t rpm-reporting.database.windows.net\tRPM_Reporting\tRPM_RPT_DW_SVC\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

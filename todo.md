@@ -31,3 +31,6 @@
 ## Bug Fixes
 
 - [x] Fix whitespace trimming in connection form inputs
+
+- [x] Add server-side input trimming and validation
+- [x] Clean existing connection data with whitespace
