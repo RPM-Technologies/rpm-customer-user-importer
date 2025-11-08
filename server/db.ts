@@ -1,11 +1,10 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, azureConnections, importJobs, importLogs, InsertAzureConnection, InsertImportJob, InsertImportLog } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -89,4 +88,86 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Azure Connections
+export async function createAzureConnection(connection: InsertAzureConnection) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(azureConnections).values(connection);
+  return result;
+}
+
+export async function getAzureConnectionsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(azureConnections).where(eq(azureConnections.userId, userId));
+}
+
+export async function getAzureConnectionById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(azureConnections).where(eq(azureConnections.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateAzureConnection(id: number, data: Partial<InsertAzureConnection>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.update(azureConnections).set(data).where(eq(azureConnections.id, id));
+}
+
+export async function deleteAzureConnection(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.delete(azureConnections).where(eq(azureConnections.id, id));
+}
+
+// Import Jobs
+export async function createImportJob(job: InsertImportJob) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(importJobs).values(job);
+  return result;
+}
+
+export async function getImportJobsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(importJobs).where(eq(importJobs.userId, userId)).orderBy(desc(importJobs.createdAt));
+}
+
+export async function getImportJobById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(importJobs).where(eq(importJobs.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateImportJob(id: number, data: Partial<InsertImportJob>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.update(importJobs).set(data).where(eq(importJobs.id, id));
+}
+
+// Import Logs
+export async function createImportLog(log: InsertImportLog) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.insert(importLogs).values(log);
+}
+
+export async function getImportLogsByJobId(jobId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(importLogs).where(eq(importLogs.jobId, jobId)).orderBy(desc(importLogs.createdAt));
+}
