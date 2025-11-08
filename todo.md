@@ -45,3 +45,5 @@
 - [x] Verify header row is properly skipped during import
 
 - [x] Fix SQL column name escaping for names with spaces
+
+- [x] Update database field names to PascalCase without spaces
