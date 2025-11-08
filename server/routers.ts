@@ -258,11 +258,14 @@ export const appRouter = router({
                 }).join("");
               }
 
-              transformed[dbField] = value;
+              // Only include the field if it has a value or if it's explicitly mapped
+              if (value !== "" || mappingConfig.type === "text") {
+                transformed[dbField] = value;
+              }
             }
 
             return transformed;
-          });
+          }).filter((row: any) => Object.keys(row).length > 0);
 
           await db.updateImportJob(input.jobId, { totalRows: transformedRows.length });
 

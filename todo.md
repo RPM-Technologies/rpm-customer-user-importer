@@ -39,3 +39,7 @@
 
 - [x] Add test connection button for existing connections
 - [x] Improve test connection UI feedback
+
+- [x] Fix SQL insert syntax to only include mapped fields
+- [x] Handle empty/unmapped fields properly
+- [x] Verify header row is properly skipped during import

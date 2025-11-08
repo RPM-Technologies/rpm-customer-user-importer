@@ -78,6 +78,11 @@ export async function insertRowsToAzure(
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       try {
+        // Skip rows with no data
+        if (Object.keys(row).length === 0) {
+          continue;
+        }
+
         const columns = Object.keys(row);
         const values = Object.values(row);
         
@@ -87,21 +92,26 @@ export async function insertRowsToAzure(
         const request = pool.request();
         columns.forEach((col, idx) => {
           const value = values[idx];
-          if (value === null || value === undefined) {
+          if (value === null || value === undefined || value === '') {
             request.input(`param${idx}`, sql.NVarChar, null);
           } else if (typeof value === 'number') {
             request.input(`param${idx}`, sql.Int, value);
           } else if (value instanceof Date) {
             request.input(`param${idx}`, sql.DateTime, value);
           } else {
-            request.input(`param${idx}`, sql.NVarChar, String(value));
+            // Trim string values and handle empty strings as NULL
+            const stringValue = String(value).trim();
+            request.input(`param${idx}`, sql.NVarChar, stringValue || null);
           }
         });
 
-        await request.query(`INSERT INTO [${tableName}] (${columnList}) VALUES (${paramList})`);
+        const query = `INSERT INTO [${tableName}] (${columnList}) VALUES (${paramList})`;
+        console.log(`[Azure SQL] Executing: ${query}`);
+        await request.query(query);
         success++;
       } catch (error: any) {
         failed++;
+        console.error(`[Azure SQL] Row ${i + 1} failed:`, error.message);
         errors.push({ row: i + 1, error: error.message });
       }
     }
