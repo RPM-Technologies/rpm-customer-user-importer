@@ -47,3 +47,5 @@
 - [x] Fix SQL column name escaping for names with spaces
 
 - [x] Update database field names to PascalCase without spaces
+
+- [x] Fix SQL INSERT syntax for schema-qualified table names (e.g., [other].[CustomerData])

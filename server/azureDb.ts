@@ -116,7 +116,9 @@ export async function insertRowsToAzure(
           }
         });
 
-        const query = `INSERT INTO [${tableName}] (${columnList}) VALUES (${paramList})`;
+        // Handle schema-qualified table names (e.g., [other].[CustomerData])
+        const tableIdentifier = tableName.includes('.') ? tableName : `[${tableName}]`;
+        const query = `INSERT INTO ${tableIdentifier} (${columnList}) VALUES (${paramList})`;
         console.log(`[Azure SQL] Row ${i + 1} - Columns: ${columns.join(', ')}`);
         console.log(`[Azure SQL] Row ${i + 1} - Query: ${query}`);
         await request.query(query);
