@@ -43,3 +43,5 @@
 - [x] Fix SQL insert syntax to only include mapped fields
 - [x] Handle empty/unmapped fields properly
 - [x] Verify header row is properly skipped during import
+
+- [x] Fix SQL column name escaping for names with spaces

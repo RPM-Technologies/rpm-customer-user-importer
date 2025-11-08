@@ -83,8 +83,22 @@ export async function insertRowsToAzure(
           continue;
         }
 
-        const columns = Object.keys(row);
-        const values = Object.values(row);
+        // Filter out null/undefined/empty string values from the row
+        const filteredRow: Record<string, any> = {};
+        for (const [key, value] of Object.entries(row)) {
+          if (value !== null && value !== undefined && value !== '') {
+            filteredRow[key] = value;
+          }
+        }
+
+        // Skip if no valid fields remain after filtering
+        if (Object.keys(filteredRow).length === 0) {
+          console.log(`[Azure SQL] Skipping row ${i + 1} - no valid data`);
+          continue;
+        }
+
+        const columns = Object.keys(filteredRow);
+        const values = Object.values(filteredRow);
         
         const columnList = columns.map(col => `[${col}]`).join(', ');
         const paramList = columns.map((_, idx) => `@param${idx}`).join(', ');
@@ -92,26 +106,25 @@ export async function insertRowsToAzure(
         const request = pool.request();
         columns.forEach((col, idx) => {
           const value = values[idx];
-          if (value === null || value === undefined || value === '') {
-            request.input(`param${idx}`, sql.NVarChar, null);
-          } else if (typeof value === 'number') {
+          if (typeof value === 'number') {
             request.input(`param${idx}`, sql.Int, value);
           } else if (value instanceof Date) {
             request.input(`param${idx}`, sql.DateTime, value);
           } else {
-            // Trim string values and handle empty strings as NULL
-            const stringValue = String(value).trim();
-            request.input(`param${idx}`, sql.NVarChar, stringValue || null);
+            // All values here are already non-empty due to filtering above
+            request.input(`param${idx}`, sql.NVarChar, String(value));
           }
         });
 
         const query = `INSERT INTO [${tableName}] (${columnList}) VALUES (${paramList})`;
-        console.log(`[Azure SQL] Executing: ${query}`);
+        console.log(`[Azure SQL] Row ${i + 1} - Columns: ${columns.join(', ')}`);
+        console.log(`[Azure SQL] Row ${i + 1} - Query: ${query}`);
         await request.query(query);
         success++;
       } catch (error: any) {
         failed++;
         console.error(`[Azure SQL] Row ${i + 1} failed:`, error.message);
+        console.error(`[Azure SQL] Row ${i + 1} data:`, JSON.stringify(row));
         errors.push({ row: i + 1, error: error.message });
       }
     }
