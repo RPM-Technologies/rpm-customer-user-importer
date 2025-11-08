@@ -26,3 +26,8 @@
 - [x] Database configuration page
 - [x] Import progress indicator
 - [x] Import history dashboard
+
+
+## Bug Fixes
+
+- [x] Fix whitespace trimming in connection form inputs

@@ -153,7 +153,7 @@ export default function Connections() {
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value.trim() })}
                         placeholder="My Azure DB"
                       />
                     </div>
@@ -163,7 +163,7 @@ export default function Connections() {
                         <Input
                           id="server"
                           value={formData.server}
-                          onChange={(e) => setFormData({ ...formData, server: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, server: e.target.value.trim() })}
                           placeholder="myserver.database.windows.net"
                         />
                       </div>
@@ -172,7 +172,7 @@ export default function Connections() {
                         <Input
                           id="database"
                           value={formData.database}
-                          onChange={(e) => setFormData({ ...formData, database: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, database: e.target.value.trim() })}
                           placeholder="mydatabase"
                         />
                       </div>
@@ -183,7 +183,7 @@ export default function Connections() {
                         <Input
                           id="username"
                           value={formData.username}
-                          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, username: e.target.value.trim() })}
                           placeholder="admin"
                         />
                       </div>
@@ -214,7 +214,7 @@ export default function Connections() {
                         <Input
                           id="tableName"
                           value={formData.tableName}
-                          onChange={(e) => setFormData({ ...formData, tableName: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, tableName: e.target.value.trim() })}
                           placeholder="Employees"
                         />
                       </div>
