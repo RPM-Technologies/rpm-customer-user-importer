@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
-import { Database, Plus, Trash2, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Database, Plus, Trash2, CheckCircle, XCircle, Loader2, Wifi } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "wouter";
@@ -15,6 +15,7 @@ export default function Connections() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [testingConnectionId, setTestingConnectionId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     server: "",
@@ -55,17 +56,30 @@ export default function Connections() {
   const testMutation = trpc.azureConnection.testConnection.useMutation({
     onSuccess: (result) => {
       if (result.success) {
-        toast.success("Connection test successful!");
+        toast.success("Connection test successful! ✓");
       } else {
         toast.error(`Connection test failed: ${result.error}`);
       }
       setIsTesting(false);
+      setTestingConnectionId(null);
     },
     onError: (error) => {
       toast.error(`Connection test failed: ${error.message}`);
       setIsTesting(false);
+      setTestingConnectionId(null);
     },
   });
+
+  const handleTestExistingConnection = async (conn: any) => {
+    setTestingConnectionId(conn.id);
+    testMutation.mutate({
+      server: conn.server,
+      database: conn.database,
+      username: conn.username,
+      password: conn.password,
+      port: conn.port,
+    });
+  };
 
   const handleTestConnection = async () => {
     if (!formData.server || !formData.database || !formData.username || !formData.password) {
@@ -294,6 +308,25 @@ export default function Connections() {
                         )}
                       </div>
                     </div>
+                    <Button
+                      className="w-full mt-4"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleTestExistingConnection(conn)}
+                      disabled={testingConnectionId === conn.id}
+                    >
+                      {testingConnectionId === conn.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Testing...
+                        </>
+                      ) : (
+                        <>
+                          <Wifi className="h-4 w-4 mr-2" />
+                          Test Connection
+                        </>
+                      )}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}

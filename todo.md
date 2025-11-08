@@ -34,3 +34,8 @@
 
 - [x] Add server-side input trimming and validation
 - [x] Clean existing connection data with whitespace
+
+## Enhancements
+
+- [x] Add test connection button for existing connections
+- [x] Improve test connection UI feedback
