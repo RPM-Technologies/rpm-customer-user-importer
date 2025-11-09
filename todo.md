@@ -139,3 +139,11 @@
 - [x] Configure database volumes for persistence
 - [x] Update app service to depend on MySQL
 - [x] Update README.md with MySQL container instructions
+
+
+## Production Docker Compose
+
+- [x] Create docker-compose.prod.yml with resource limits
+- [x] Add security configurations (read-only filesystem, no-new-privileges)
+- [x] Configure production logging
+- [x] Add production deployment documentation
