@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Database, FileSpreadsheet, History, Upload } from "lucide-react";
+import { Database, FileSpreadsheet, History, Upload, Trash2 } from "lucide-react";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
 
@@ -73,7 +73,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <Database className="h-12 w-12 text-primary mb-4" />
@@ -115,6 +115,21 @@ export default function Home() {
               <CardContent>
                 <Button className="w-full" variant="outline" asChild>
                   <Link href="/history">View History</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Trash2 className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Data Cleanup</CardTitle>
+                <CardDescription>
+                  Remove imported records by customer and import date
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/cleanup">Cleanup Data</Link>
                 </Button>
               </CardContent>
             </Card>

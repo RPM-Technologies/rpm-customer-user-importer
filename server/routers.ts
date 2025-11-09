@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { storagePut } from "./storage";
-import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure } from "./azureDb";
+import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure, getDistinctCustomers, getDistinctImportDates, deleteRecordsByCustomerAndDate } from "./azureDb";
 import Papa from "papaparse";
 
 export const appRouter = router({
@@ -338,6 +338,51 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.deleteMappingTemplate(input.id, ctx.user.id);
         return { success: true };
+      }),
+  }),
+
+  dataCleanup: router({
+    getCustomers: protectedProcedure
+      .input(z.object({ connectionId: z.number() }))
+      .query(async ({ input }) => {
+        const connection = await db.getAzureConnectionById(input.connectionId);
+        if (!connection) {
+          throw new Error("Connection not found");
+        }
+        const config = createAzureConfig(connection);
+        return await getDistinctCustomers(config, connection.tableName);
+      }),
+
+    getImportDates: protectedProcedure
+      .input(z.object({ connectionId: z.number() }))
+      .query(async ({ input }) => {
+        const connection = await db.getAzureConnectionById(input.connectionId);
+        if (!connection) {
+          throw new Error("Connection not found");
+        }
+        const config = createAzureConfig(connection);
+        return await getDistinctImportDates(config, connection.tableName);
+      }),
+
+    deleteRecords: protectedProcedure
+      .input(z.object({
+        connectionId: z.number(),
+        customerName: z.string(),
+        importDate: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const connection = await db.getAzureConnectionById(input.connectionId);
+        if (!connection) {
+          throw new Error("Connection not found");
+        }
+        const config = createAzureConfig(connection);
+        const result = await deleteRecordsByCustomerAndDate(
+          config,
+          connection.tableName,
+          input.customerName,
+          input.importDate
+        );
+        return result;
       }),
   }),
 });

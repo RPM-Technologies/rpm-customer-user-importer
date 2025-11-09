@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Connections from "./pages/Connections";
 import ImportWizard from "./pages/ImportWizard";
 import ImportHistory from "./pages/ImportHistory";
+import DataCleanup from "./pages/DataCleanup";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path={"/connections"} component={Connections} />
       <Route path={"/import"} component={ImportWizard} />
       <Route path={"/history"} component={ImportHistory} />
+      <Route path={"/cleanup"} component={DataCleanup} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

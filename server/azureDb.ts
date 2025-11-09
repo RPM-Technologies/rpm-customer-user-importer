@@ -144,3 +144,82 @@ export async function insertRowsToAzure(
     }
   }
 }
+
+
+export async function getDistinctCustomers(
+  config: AzureDbConfig,
+  tableName: string
+): Promise<string[]> {
+  let pool: sql.ConnectionPool | null = null;
+  
+  try {
+    pool = await sql.connect(config);
+    const tableIdentifier = tableName.includes('.') ? tableName : `[${tableName}]`;
+    const query = `SELECT DISTINCT [CustomerName] FROM ${tableIdentifier} WHERE [CustomerName] IS NOT NULL ORDER BY [CustomerName]`;
+    
+    const result = await pool.request().query(query);
+    return result.recordset.map((row: any) => row.CustomerName);
+  } catch (error: any) {
+    console.error('[Azure SQL] Failed to fetch distinct customers:', error);
+    throw new Error(`Failed to fetch customers: ${error.message}`);
+  } finally {
+    if (pool) {
+      await pool.close();
+    }
+  }
+}
+
+export async function getDistinctImportDates(
+  config: AzureDbConfig,
+  tableName: string
+): Promise<string[]> {
+  let pool: sql.ConnectionPool | null = null;
+  
+  try {
+    pool = await sql.connect(config);
+    const tableIdentifier = tableName.includes('.') ? tableName : `[${tableName}]`;
+    const query = `SELECT DISTINCT CONVERT(VARCHAR(10), [ImportDate], 120) AS ImportDate FROM ${tableIdentifier} WHERE [ImportDate] IS NOT NULL ORDER BY ImportDate DESC`;
+    
+    const result = await pool.request().query(query);
+    return result.recordset.map((row: any) => row.ImportDate);
+  } catch (error: any) {
+    console.error('[Azure SQL] Failed to fetch distinct import dates:', error);
+    throw new Error(`Failed to fetch import dates: ${error.message}`);
+  } finally {
+    if (pool) {
+      await pool.close();
+    }
+  }
+}
+
+export async function deleteRecordsByCustomerAndDate(
+  config: AzureDbConfig,
+  tableName: string,
+  customerName: string,
+  importDate: string
+): Promise<{ deletedCount: number }> {
+  let pool: sql.ConnectionPool | null = null;
+  
+  try {
+    pool = await sql.connect(config);
+    const tableIdentifier = tableName.includes('.') ? tableName : `[${tableName}]`;
+    
+    const request = pool.request();
+    request.input('customerName', sql.NVarChar, customerName);
+    request.input('importDate', sql.Date, new Date(importDate));
+    
+    const query = `DELETE FROM ${tableIdentifier} WHERE [CustomerName] = @customerName AND CONVERT(DATE, [ImportDate]) = @importDate`;
+    
+    console.log(`[Azure SQL] Deleting records for customer: ${customerName}, import date: ${importDate}`);
+    const result = await request.query(query);
+    
+    return { deletedCount: result.rowsAffected[0] || 0 };
+  } catch (error: any) {
+    console.error('[Azure SQL] Failed to delete records:', error);
+    throw new Error(`Failed to delete records: ${error.message}`);
+  } finally {
+    if (pool) {
+      await pool.close();
+    }
+  }
+}

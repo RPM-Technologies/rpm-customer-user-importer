@@ -78,3 +78,15 @@
 - [x] Pass selected ImportDate to backend during import
 - [x] Update backend to use user-selected ImportDate instead of automatic current datetime
 - [x] Test date selection functionality
+
+
+## Data Cleanup Feature
+
+- [x] Create backend API to fetch distinct customer names from Azure SQL
+- [x] Create backend API to fetch distinct import dates from Azure SQL
+- [x] Create backend API to delete records by customer name and import date
+- [x] Create Data Cleanup page with navigation
+- [x] Add customer name dropdown selector
+- [x] Add import date dropdown selector
+- [x] Add delete confirmation dialog
+- [x] Test data cleanup functionality
