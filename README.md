@@ -116,6 +116,86 @@ Map "Street Address" field by concatenating:
 - Text: " "
 - CSV Field: "StreetName"
 
+## Docker Deployment
+
+### Prerequisites
+- Docker and Docker Compose installed on your system
+- Azure SQL Server with firewall rules configured
+- MySQL/TiDB database for application data
+
+### Quick Start with Docker
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd csv-azure-importer
+   ```
+
+2. **Create environment file**:
+   Create a `.env` file in the project root with the following variables:
+   ```env
+   DATABASE_URL=mysql://user:password@host:port/database
+   JWT_SECRET=your-jwt-secret-key
+   OAUTH_SERVER_URL=https://api.manus.im
+   VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+   VITE_APP_ID=your-app-id
+   OWNER_OPEN_ID=your-owner-open-id
+   OWNER_NAME=Your Name
+   VITE_APP_TITLE=CSV to Azure SQL Importer
+   VITE_APP_LOGO=/logo.svg
+   ```
+
+3. **Build and run with Docker Compose**:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access the application**:
+   Open your browser and navigate to `http://localhost:3000`
+
+### Manual Docker Build
+
+If you prefer to build and run without Docker Compose:
+
+```bash
+# Build the image
+docker build -t csv-azure-importer .
+
+# Run the container
+docker run -d \
+  --name csv-azure-importer \
+  -p 3000:3000 \
+  --env-file .env \
+  csv-azure-importer
+```
+
+### Docker Image Details
+
+- **Base Image**: Node.js 22 Alpine (lightweight)
+- **Multi-stage Build**: Optimized for production
+- **Port**: 3000
+- **Health Check**: Built-in health monitoring
+- **Restart Policy**: Automatic restart on failure
+
+### Production Deployment Tips
+
+1. **Use a reverse proxy** (nginx, Caddy) for SSL/TLS termination
+2. **Set strong JWT_SECRET** for production environments
+3. **Configure Azure SQL firewall** to allow your Docker host IP
+4. **Use Docker volumes** for persistent data if needed
+5. **Monitor container health** using Docker health checks
+6. **Set resource limits** in docker-compose.yml for production
+
+### Stopping the Application
+
+```bash
+# Stop and remove containers
+docker-compose down
+
+# Stop and remove containers with volumes
+docker-compose down -v
+```
+
 ## Technical Details
 
 ### Database Schema

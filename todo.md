@@ -122,3 +122,12 @@
 - [x] Remove customer and date selectors from review step (Step 4)
 - [x] Update import logic to use importDate from state
 - [x] Test the reorganized workflow
+
+
+## Docker Containerization
+
+- [x] Create Dockerfile for production build
+- [x] Create docker-compose.yml for easy deployment
+- [x] Create .dockerignore file
+- [x] Update README.md with Docker instructions
+- [x] Test Docker build
