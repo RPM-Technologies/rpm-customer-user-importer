@@ -67,13 +67,6 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">CSV to Azure SQL Importer</h2>
-            <p className="text-lg text-muted-foreground">
-              Easily import CSV data into your Azure SQL database with advanced field mapping capabilities
-            </p>
-          </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>

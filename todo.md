@@ -162,3 +162,5 @@
 - [x] Update primary color to #AD1111 in index.css
 - [ ] Update APP_TITLE to "RPM Customer Users Importer" in const.ts
 - [x] Test color changes across all pages
+
+- [x] Remove "CSV to Azure SQL Importer" heading and subtitle from main page
