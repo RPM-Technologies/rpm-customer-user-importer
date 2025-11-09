@@ -121,7 +121,6 @@ Map "Street Address" field by concatenating:
 ### Prerequisites
 - Docker and Docker Compose installed on your system
 - Azure SQL Server with firewall rules configured
-- MySQL/TiDB database for application data
 
 ### Quick Start with Docker
 
@@ -134,7 +133,13 @@ Map "Street Address" field by concatenating:
 2. **Create environment file**:
    Create a `.env` file in the project root with the following variables:
    ```env
-   DATABASE_URL=mysql://user:password@host:port/database
+   # MySQL Database Configuration (used by Docker Compose)
+   MYSQL_ROOT_PASSWORD=rootpassword
+   MYSQL_DATABASE=csv_importer
+   MYSQL_USER=csvuser
+   MYSQL_PASSWORD=csvpassword
+   
+   # Application Configuration
    JWT_SECRET=your-jwt-secret-key
    OAUTH_SERVER_URL=https://api.manus.im
    VITE_OAUTH_PORTAL_URL=https://portal.manus.im
@@ -144,14 +149,28 @@ Map "Street Address" field by concatenating:
    VITE_APP_TITLE=CSV to Azure SQL Importer
    VITE_APP_LOGO=/logo.svg
    ```
+   
+   **Note**: The `DATABASE_URL` is automatically configured to connect to the MySQL container. You don't need to set it manually.
 
 3. **Build and run with Docker Compose**:
    ```bash
    docker-compose up -d
    ```
 
-4. **Access the application**:
+4. **Wait for services to start**:
+   The MySQL database will initialize on first run (takes about 30 seconds)
+   
+5. **Access the application**:
    Open your browser and navigate to `http://localhost:3000`
+
+### What's Included
+
+The Docker Compose setup includes:
+- **Application Container**: The CSV to Azure SQL Importer web application
+- **MySQL Container**: MySQL 8.0 database for storing application data (connections, import jobs, logs, templates, audit logs)
+- **Persistent Volume**: MySQL data is stored in a Docker volume for persistence
+- **Health Checks**: Both containers have health monitoring
+- **Automatic Networking**: Containers communicate via a private network
 
 ### Manual Docker Build
 

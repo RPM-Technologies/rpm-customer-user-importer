@@ -131,3 +131,11 @@
 - [x] Create .dockerignore file
 - [x] Update README.md with Docker instructions
 - [x] Test Docker build
+
+
+## MySQL Database Container
+
+- [x] Add MySQL service to docker-compose.yml
+- [x] Configure database volumes for persistence
+- [x] Update app service to depend on MySQL
+- [x] Update README.md with MySQL container instructions

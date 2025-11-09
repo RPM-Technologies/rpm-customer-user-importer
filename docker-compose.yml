@@ -1,15 +1,38 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: csv-importer-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-csv_importer}
+      MYSQL_USER: ${MYSQL_USER:-csvuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-csvpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - app-network
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: csv-importer-app
     ports:
       - "3000:3000"
     environment:
-      # Database connection
-      - DATABASE_URL=${DATABASE_URL}
+      # Database connection - connects to MySQL service
+      - DATABASE_URL=mysql://${MYSQL_USER:-csvuser}:${MYSQL_PASSWORD:-csvpassword}@mysql:3306/${MYSQL_DATABASE:-csv_importer}
       
       # JWT and OAuth
       - JWT_SECRET=${JWT_SECRET}
@@ -34,6 +57,9 @@ services:
       # Analytics (optional)
       - VITE_ANALYTICS_ENDPOINT=${VITE_ANALYTICS_ENDPOINT}
       - VITE_ANALYTICS_WEBSITE_ID=${VITE_ANALYTICS_WEBSITE_ID}
+    depends_on:
+      mysql:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
@@ -41,3 +67,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
