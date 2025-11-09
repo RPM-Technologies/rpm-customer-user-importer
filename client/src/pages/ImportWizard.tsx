@@ -14,7 +14,6 @@ import { Link, useLocation } from "wouter";
 import { APP_TITLE, getLoginUrl } from "@/const";
 
 const TARGET_FIELDS = [
-  "CustomerName",
   "DisplayName",
   "FirstName",
   "LastName",
@@ -65,6 +64,7 @@ export default function ImportWizard() {
   const [templateName, setTemplateName] = useState("");
   const [templateDescription, setTemplateDescription] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
+  const [importDate, setImportDate] = useState<string>(new Date().toISOString().split('T')[0]); // Default to current date
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: connections, isLoading: connectionsLoading } = trpc.azureConnection.list.useQuery(undefined, {
@@ -258,6 +258,7 @@ export default function ImportWizard() {
         jobId: jobId,
         csvContent: csvContent,
         customerName: selectedCustomer,
+        importDate: importDate,
       });
     } catch (error: any) {
       toast.error(`Import failed: ${error.message}`);
@@ -468,6 +469,50 @@ export default function ImportWizard() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-muted p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">Customer Name</h4>
+                      <div className="space-y-2">
+                        <Label htmlFor="customerNameMap" className="text-sm">Select customer from PC_Customers table:</Label>
+                        {companyNamesLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span className="text-sm text-muted-foreground">Loading customers...</span>
+                          </div>
+                        ) : (
+                          <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                            <SelectTrigger id="customerNameMap">
+                              <SelectValue placeholder="Select a customer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {companyNames?.map((name) => (
+                                <SelectItem key={name} value={name}>
+                                  {name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        <p className="text-xs text-muted-foreground">This will be used for the CustomerName field</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-muted p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">Import Date</h4>
+                      <div className="space-y-2">
+                        <Label htmlFor="importDateMap" className="text-sm">Select import date:</Label>
+                        <Input
+                          id="importDateMap"
+                          type="date"
+                          value={importDate}
+                          onChange={(e) => setImportDate(e.target.value)}
+                          className="w-full"
+                        />
+                        <p className="text-xs text-muted-foreground">This date will be recorded for all imported records</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-4">
                     {TARGET_FIELDS.map((targetField) => (
                       <div key={targetField} className="border rounded-lg p-4">
@@ -643,31 +688,13 @@ export default function ImportWizard() {
                   </div>
 
                   <div className="bg-muted p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Customer Name</h4>
-                    <div className="space-y-2">
-                      <Label htmlFor="customerName" className="text-sm">Select customer from PC_Customers table:</Label>
-                      {companyNamesLoading ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span className="text-sm text-muted-foreground">Loading customers...</span>
-                        </div>
-                      ) : (
-                        <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                          <SelectTrigger id="customerName">
-                            <SelectValue placeholder="Select a customer" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {companyNames?.map((name) => (
-                              <SelectItem key={name} value={name}>
-                                {name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                      <p className="text-xs text-muted-foreground">This will be used for the CustomerName field in all imported records</p>
+                    <h4 className="font-semibold mb-2">Selected Options</h4>
+                    <div className="text-sm space-y-1">
+                      <p><span className="font-medium">Customer:</span> {selectedCustomer || "Not selected"}</p>
+                      <p><span className="font-medium">Import Date:</span> {importDate}</p>
                     </div>
                   </div>
+
 
                   <div className="border rounded-lg p-4">
                     <h4 className="font-semibold mb-3">Field Mappings</h4>

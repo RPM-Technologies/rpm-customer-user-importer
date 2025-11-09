@@ -222,6 +222,7 @@ export const appRouter = router({
         jobId: z.number(),
         csvContent: z.string(),
         customerName: z.string(),
+        importDate: z.string(),
       }))
       .mutation(async ({ input }) => {
         const job = await db.getImportJobById(input.jobId);
@@ -252,6 +253,7 @@ export const appRouter = router({
           const transformedRows = csvRows.map((row: any) => {
             const transformed: Record<string, any> = {
               CustomerName: input.customerName, // Add customer name from dropdown
+              ImportDate: input.importDate, // Add import date from date selector
             };
             
             for (const [dbField, mapping] of Object.entries(mappings)) {

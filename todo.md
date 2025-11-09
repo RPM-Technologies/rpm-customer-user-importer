@@ -112,3 +112,13 @@
 - [x] Add customer name dropdown in import wizard (Step 1 or review step)
 - [x] Update import logic to use selected customer name for CustomerName field
 - [x] Test customer name selection and import
+
+
+## UI Reorganization - Move Selectors to Map Fields Page
+
+- [x] Remove CustomerName from TARGET_FIELDS list
+- [x] Move customer name dropdown from review step to Map Fields page (Step 3)
+- [x] Add date selector to Map Fields page (Step 3) with current date as default
+- [x] Remove customer and date selectors from review step (Step 4)
+- [x] Update import logic to use importDate from state
+- [x] Test the reorganized workflow
