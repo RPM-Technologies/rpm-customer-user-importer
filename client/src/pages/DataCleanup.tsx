@@ -97,6 +97,9 @@ export default function DataCleanup() {
             <Button variant="ghost" asChild>
               <Link href="/history">History</Link>
             </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/audit-logs">Audit Logs</Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -202,7 +205,7 @@ export default function DataCleanup() {
                   )}
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 space-y-3">
                   <Button
                     variant="destructive"
                     onClick={() => setShowDeleteDialog(true)}
@@ -220,6 +223,10 @@ export default function DataCleanup() {
                         Delete Records
                       </>
                     )}
+                  </Button>
+                  
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link href="/audit-logs">View Audit Logs</Link>
                   </Button>
                 </div>
               </div>

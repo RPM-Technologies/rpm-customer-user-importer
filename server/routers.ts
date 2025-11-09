@@ -370,7 +370,7 @@ export const appRouter = router({
         customerName: z.string(),
         importDate: z.string(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const connection = await db.getAzureConnectionById(input.connectionId);
         if (!connection) {
           throw new Error("Connection not found");
@@ -382,7 +382,32 @@ export const appRouter = router({
           input.customerName,
           input.importDate
         );
+        
+        // Create audit log entry
+        await db.createCleanupAuditLog({
+          userId: ctx.user.id,
+          connectionId: input.connectionId,
+          customerName: input.customerName,
+          importDate: input.importDate,
+          deletedCount: result.deletedCount,
+          tableName: connection.tableName,
+        });
+        
         return result;
+      }),
+  }),
+
+  auditLog: router({
+    list: protectedProcedure
+      .input(z.object({ limit: z.number().optional() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getCleanupAuditLogs(ctx.user.id, input.limit || 50);
+      }),
+
+    listAll: protectedProcedure
+      .input(z.object({ limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return await db.getAllCleanupAuditLogs(input.limit || 100);
       }),
   }),
 });

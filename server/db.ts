@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, mappingTemplates, InsertMappingTemplate, azureConnections, importJobs, importLogs, InsertAzureConnection, InsertImportJob, InsertImportLog } from "../drizzle/schema";
+import { InsertUser, users, mappingTemplates, InsertMappingTemplate, azureConnections, importJobs, importLogs, cleanupAuditLogs, InsertAzureConnection, InsertImportJob, InsertImportLog, InsertCleanupAuditLog } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -198,4 +198,43 @@ export async function deleteMappingTemplate(id: number, userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(mappingTemplates).where(eq(mappingTemplates.id, id));
+}
+
+
+// Cleanup Audit Log operations
+export async function createCleanupAuditLog(log: InsertCleanupAuditLog) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  
+  const result = await db.insert(cleanupAuditLogs).values(log);
+  return result;
+}
+
+export async function getCleanupAuditLogs(userId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  
+  return await db
+    .select()
+    .from(cleanupAuditLogs)
+    .where(eq(cleanupAuditLogs.userId, userId))
+    .orderBy(desc(cleanupAuditLogs.createdAt))
+    .limit(limit);
+}
+
+export async function getAllCleanupAuditLogs(limit: number = 100) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  
+  return await db
+    .select()
+    .from(cleanupAuditLogs)
+    .orderBy(desc(cleanupAuditLogs.createdAt))
+    .limit(limit);
 }

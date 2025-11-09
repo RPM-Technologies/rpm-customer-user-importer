@@ -90,3 +90,14 @@
 - [x] Add import date dropdown selector
 - [x] Add delete confirmation dialog
 - [x] Test data cleanup functionality
+
+
+## Cleanup Audit Log Feature
+
+- [x] Create cleanup_audit_logs table in database schema
+- [x] Add database helper functions for audit log operations
+- [x] Update deleteRecords mutation to create audit log entries
+- [x] Create backend API to fetch audit logs
+- [x] Create Audit Logs page with filtering options
+- [x] Add navigation link to Audit Logs page
+- [x] Test audit log creation and viewing

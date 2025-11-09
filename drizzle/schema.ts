@@ -92,3 +92,20 @@ export const importLogs = mysqlTable("import_logs", {
 
 export type ImportLog = typeof importLogs.$inferSelect;
 export type InsertImportLog = typeof importLogs.$inferInsert;
+
+/**
+ * Cleanup audit logs for tracking data deletion operations
+ */
+export const cleanupAuditLogs = mysqlTable("cleanup_audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  connectionId: int("connectionId").notNull(),
+  customerName: varchar("customerName", { length: 255 }).notNull(),
+  importDate: varchar("importDate", { length: 10 }).notNull(), // YYYY-MM-DD format
+  deletedCount: int("deletedCount").notNull(),
+  tableName: varchar("tableName", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CleanupAuditLog = typeof cleanupAuditLogs.$inferSelect;
+export type InsertCleanupAuditLog = typeof cleanupAuditLogs.$inferInsert;
