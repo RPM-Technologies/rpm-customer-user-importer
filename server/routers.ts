@@ -304,6 +304,41 @@ export const appRouter = router({
         }
       }),
   }),
+
+  mappingTemplate: router({
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        mappings: z.string(), // JSON string of field mappings
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const template = await db.createMappingTemplate({
+          userId: ctx.user.id,
+          name: input.name.trim(),
+          description: input.description?.trim() || null,
+          mappings: input.mappings,
+        });
+        return template;
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getMappingTemplatesByUserId(ctx.user.id);
+    }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getMappingTemplateById(input.id);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteMappingTemplate(input.id, ctx.user.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

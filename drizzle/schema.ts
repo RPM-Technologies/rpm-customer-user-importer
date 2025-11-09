@@ -19,7 +19,23 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Azure SQL database connections configured by users
+ * Mapping templates table - stores reusable field mapping configurations
+ */
+export const mappingTemplates = mysqlTable("mapping_templates", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  mappings: text("mappings").notNull(), // JSON string of field mappings
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MappingTemplate = typeof mappingTemplates.$inferSelect;
+export type InsertMappingTemplate = typeof mappingTemplates.$inferInsert;
+
+/**
+ * Azure SQL connections configured by users
  */
 export const azureConnections = mysqlTable("azure_connections", {
   id: int("id").autoincrement().primaryKey(),

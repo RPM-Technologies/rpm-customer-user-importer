@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { Upload, Loader2, ArrowRight, ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { Upload, Loader2, ArrowRight, ArrowLeft, Plus, Trash2, Save, FolderOpen } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Link, useLocation } from "wouter";
@@ -58,10 +60,41 @@ export default function ImportWizard() {
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [csvPreview, setCsvPreview] = useState<any[]>([]);
   const [fieldMappings, setFieldMappings] = useState<Record<string, FieldMapping>>({});
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: connections, isLoading: connectionsLoading } = trpc.azureConnection.list.useQuery(undefined, {
     enabled: isAuthenticated,
+  });
+
+  const { data: templates, refetch: refetchTemplates } = trpc.mappingTemplate.list.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
+  const saveTemplateMutation = trpc.mappingTemplate.create.useMutation({
+    onSuccess: () => {
+      toast.success("Template saved successfully");
+      setShowSaveTemplate(false);
+      setTemplateName("");
+      setTemplateDescription("");
+      refetchTemplates();
+    },
+    onError: (error) => {
+      toast.error(`Failed to save template: ${error.message}`);
+    },
+  });
+
+  const deleteTemplateMutation = trpc.mappingTemplate.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Template deleted successfully");
+      refetchTemplates();
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete template: ${error.message}`);
+    },
   });
 
   const parseMutation = trpc.csv.parse.useMutation({
@@ -159,6 +192,39 @@ export default function ImportWizard() {
     const newMappings = { ...fieldMappings };
     delete newMappings[targetField];
     setFieldMappings(newMappings);
+  };
+
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) {
+      toast.error("Please enter a template name");
+      return;
+    }
+
+    saveTemplateMutation.mutate({
+      name: templateName,
+      description: templateDescription,
+      mappings: JSON.stringify(fieldMappings),
+    });
+  };
+
+  const handleLoadTemplate = (templateId: number) => {
+    const template = templates?.find(t => t.id === templateId);
+    if (template) {
+      try {
+        const mappings = JSON.parse(template.mappings);
+        setFieldMappings(mappings);
+        setShowTemplateSelector(false);
+        toast.success(`Template "${template.name}" loaded successfully`);
+      } catch (error) {
+        toast.error("Failed to load template: Invalid format");
+      }
+    }
+  };
+
+  const handleDeleteTemplate = (templateId: number) => {
+    if (confirm("Are you sure you want to delete this template?")) {
+      deleteTemplateMutation.mutate({ id: templateId });
+    }
   };
 
   const handleImport = async () => {
@@ -360,10 +426,31 @@ export default function ImportWizard() {
           {step === 3 && (
             <Card>
               <CardHeader>
-                <CardTitle>Map CSV Fields to Database Fields</CardTitle>
-                <CardDescription>
-                  Configure how CSV columns map to your database table fields. You can concatenate multiple fields and add custom text.
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Map CSV Fields to Database Fields</CardTitle>
+                    <CardDescription>
+                      Configure how CSV columns map to your database table fields. You can concatenate multiple fields and add custom text.
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+                    >
+                      Load Template
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSaveTemplate(!showSaveTemplate)}
+                      disabled={Object.keys(fieldMappings).length === 0}
+                    >
+                      Save as Template
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -589,6 +676,122 @@ export default function ImportWizard() {
           )}
         </div>
       </main>
+
+      {/* Save Template Dialog */}
+      <Dialog open={showSaveTemplate} onOpenChange={setShowSaveTemplate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Mapping Template</DialogTitle>
+            <DialogDescription>
+              Save your current field mappings as a reusable template for future imports.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="template-name">Template Name *</Label>
+              <Input
+                id="template-name"
+                placeholder="e.g., Employee Import Template"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="template-description">Description (Optional)</Label>
+              <Textarea
+                id="template-description"
+                placeholder="Describe what this template is for..."
+                value={templateDescription}
+                onChange={(e) => setTemplateDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSaveTemplate(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveTemplate} disabled={saveTemplateMutation.isPending}>
+              {saveTemplateMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Template
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Load Template Dialog */}
+      <Dialog open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Load Mapping Template</DialogTitle>
+            <DialogDescription>
+              Select a saved template to apply its field mappings.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {templates && templates.length > 0 ? (
+              <div className="space-y-2">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{template.name}</h4>
+                        {template.description && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {template.description}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Created: {new Date(template.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleLoadTemplate(template.id)}
+                        >
+                          <FolderOpen className="h-4 w-4 mr-1" />
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteTemplate(template.id)}
+                          disabled={deleteTemplateMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No templates saved yet.</p>
+                <p className="text-sm mt-2">Create field mappings and save them as a template for future use.</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTemplateSelector(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

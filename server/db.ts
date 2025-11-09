@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, azureConnections, importJobs, importLogs, InsertAzureConnection, InsertImportJob, InsertImportLog } from "../drizzle/schema";
+import { InsertUser, users, mappingTemplates, InsertMappingTemplate, azureConnections, importJobs, importLogs, InsertAzureConnection, InsertImportJob, InsertImportLog } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -170,4 +170,32 @@ export async function getImportLogsByJobId(jobId: number) {
   if (!db) return [];
   
   return await db.select().from(importLogs).where(eq(importLogs.jobId, jobId)).orderBy(desc(importLogs.createdAt));
+}
+
+// Mapping Templates
+export async function createMappingTemplate(template: InsertMappingTemplate) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(mappingTemplates).values(template);
+  return result;
+}
+
+export async function getMappingTemplatesByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const result = await db.select().from(mappingTemplates).where(eq(mappingTemplates.userId, userId)).orderBy(desc(mappingTemplates.createdAt));
+  return result;
+}
+
+export async function getMappingTemplateById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(mappingTemplates).where(eq(mappingTemplates.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function deleteMappingTemplate(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(mappingTemplates).where(eq(mappingTemplates.id, id));
 }

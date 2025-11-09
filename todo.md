@@ -49,3 +49,16 @@
 - [x] Update database field names to PascalCase without spaces
 
 - [x] Fix SQL INSERT syntax for schema-qualified table names (e.g., [other].[CustomerData])
+
+
+## Mapping Template Feature
+
+- [x] Create mapping_templates table in database
+- [x] Add backend API for creating templates
+- [x] Add backend API for listing templates
+- [x] Add backend API for loading templates
+- [x] Add backend API for deleting templates
+- [x] Add "Save as Template" button in field mapping UI
+- [x] Add template selector dropdown in field mapping UI
+- [x] Add template management in dialogs
+- [x] Test template save and load functionality

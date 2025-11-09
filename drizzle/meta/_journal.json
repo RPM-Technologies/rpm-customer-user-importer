@@ -15,6 +15,13 @@
       "when": 1762607859526,
       "tag": "0001_green_carmella_unuscione",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1762614315840,
+      "tag": "0002_slimy_cargill",
+      "breakpoints": true
     }
   ]
 }
