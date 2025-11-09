@@ -65,8 +65,7 @@ export async function getTableColumns(config: AzureDbConfig, tableName: string):
 export async function insertRowsToAzure(
   config: AzureDbConfig,
   tableName: string,
-  rows: Record<string, any>[],
-  importDate?: string
+  rows: Record<string, any>[]
 ): Promise<{ success: number; failed: number; errors: Array<{ row: number; error: string }> }> {
   let pool: sql.ConnectionPool | null = null;
   let success = 0;
@@ -82,11 +81,6 @@ export async function insertRowsToAzure(
         // Skip rows with no data
         if (Object.keys(row).length === 0) {
           continue;
-        }
-
-        // Add ImportDate with user-selected date or current datetime if not already present
-        if (!row.ImportDate) {
-          row.ImportDate = importDate ? new Date(importDate) : new Date();
         }
 
         // Filter out null/undefined/empty string values from the row
@@ -217,6 +211,27 @@ export async function deleteRecordsByCustomerAndDate(
   } catch (error: any) {
     console.error('[Azure SQL] Failed to delete records:', error);
     throw new Error(`Failed to delete records: ${error.message}`);
+  } finally {
+    if (pool) {
+      await pool.close();
+    }
+  }
+}
+
+export async function getCompanyNamesFromPCCustomers(
+  config: AzureDbConfig
+): Promise<string[]> {
+  let pool: sql.ConnectionPool | null = null;
+  
+  try {
+    pool = await sql.connect(config);
+    const query = `SELECT DISTINCT [companyName] FROM [pc].[PC_Customers] WHERE [companyName] IS NOT NULL ORDER BY [companyName]`;
+    
+    const result = await pool.request().query(query);
+    return result.recordset.map((row: any) => row.companyName);
+  } catch (error: any) {
+    console.error('[Azure SQL] Failed to fetch company names from PC_Customers:', error);
+    throw new Error(`Failed to fetch company names: ${error.message}`);
   } finally {
     if (pool) {
       await pool.close();

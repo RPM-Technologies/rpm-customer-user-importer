@@ -35,7 +35,6 @@ const TARGET_FIELDS = [
   "FaxNumber",
   "PersonalMobilePhone",
   "ManagerEmail",
-  "ImportDate",
 ];
 
 type MappingPart = {
@@ -65,7 +64,7 @@ export default function ImportWizard() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [templateDescription, setTemplateDescription] = useState("");
-  const [importDate, setImportDate] = useState<string>(new Date().toISOString().split('T')[0]); // Default to current date in YYYY-MM-DD format
+  const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: connections, isLoading: connectionsLoading } = trpc.azureConnection.list.useQuery(undefined, {
@@ -75,6 +74,11 @@ export default function ImportWizard() {
   const { data: templates, refetch: refetchTemplates } = trpc.mappingTemplate.list.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+
+  const { data: companyNames, isLoading: companyNamesLoading } = trpc.azureConnection.getCompanyNames.useQuery(
+    { connectionId: selectedConnection! },
+    { enabled: isAuthenticated && selectedConnection !== null }
+  );
 
   const saveTemplateMutation = trpc.mappingTemplate.create.useMutation({
     onSuccess: () => {
@@ -230,7 +234,7 @@ export default function ImportWizard() {
   };
 
   const handleImport = async () => {
-    if (!selectedConnection || !csvFile || !csvContent) {
+    if (!selectedConnection || !csvFile || !csvContent || !selectedCustomer) {
       toast.error("Missing required information");
       return;
     }
@@ -253,7 +257,7 @@ export default function ImportWizard() {
       await executeJobMutation.mutateAsync({
         jobId: jobId,
         csvContent: csvContent,
-        importDate: importDate,
+        customerName: selectedCustomer,
       });
     } catch (error: any) {
       toast.error(`Import failed: ${error.message}`);
@@ -639,18 +643,30 @@ export default function ImportWizard() {
                   </div>
 
                   <div className="bg-muted p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Import Date</h4>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="importDate" className="text-sm">Select import date:</Label>
-                      <Input
-                        id="importDate"
-                        type="date"
-                        value={importDate}
-                        onChange={(e) => setImportDate(e.target.value)}
-                        className="w-48"
-                      />
+                    <h4 className="font-semibold mb-2">Customer Name</h4>
+                    <div className="space-y-2">
+                      <Label htmlFor="customerName" className="text-sm">Select customer from PC_Customers table:</Label>
+                      {companyNamesLoading ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-sm text-muted-foreground">Loading customers...</span>
+                        </div>
+                      ) : (
+                        <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                          <SelectTrigger id="customerName">
+                            <SelectValue placeholder="Select a customer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {companyNames?.map((name) => (
+                              <SelectItem key={name} value={name}>
+                                {name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      <p className="text-xs text-muted-foreground">This will be used for the CustomerName field in all imported records</p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">This date will be recorded for all imported records</p>
                   </div>
 
                   <div className="border rounded-lg p-4">
@@ -674,19 +690,25 @@ export default function ImportWizard() {
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back
                     </Button>
-                    <Button
-                      onClick={handleImport}
-                      disabled={executeJobMutation.isPending || uploadMutation.isPending || createJobMutation.isPending}
-                    >
-                      {executeJobMutation.isPending ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Importing...
-                        </>
-                      ) : (
-                        "Start Import"
+                    <div className="flex flex-col items-end gap-2">
+                      <Button
+                        onClick={handleImport}
+                        disabled={executeJobMutation.isPending || !selectedCustomer}
+                        size="lg"
+                      >
+                        {executeJobMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Importing...
+                          </>
+                        ) : (
+                          "Start Import"
+                        )}
+                      </Button>
+                      {!selectedCustomer && (
+                        <p className="text-sm text-destructive">Please select a customer before importing</p>
                       )}
-                    </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -101,3 +101,14 @@
 - [x] Create Audit Logs page with filtering options
 - [x] Add navigation link to Audit Logs page
 - [x] Test audit log creation and viewing
+
+
+## Customer Name Dropdown Feature
+
+- [x] Remove ImportDate from TARGET_FIELDS list
+- [x] Remove ImportDate date picker from import wizard UI
+- [x] Remove ImportDate logic from backend import function
+- [x] Create backend API to fetch company names from pc.PC_Customers table
+- [x] Add customer name dropdown in import wizard (Step 1 or review step)
+- [x] Update import logic to use selected customer name for CustomerName field
+- [x] Test customer name selection and import

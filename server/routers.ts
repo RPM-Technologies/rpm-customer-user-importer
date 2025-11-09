@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { storagePut } from "./storage";
-import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure, getDistinctCustomers, getDistinctImportDates, deleteRecordsByCustomerAndDate } from "./azureDb";
+import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure, getDistinctCustomers, getDistinctImportDates, deleteRecordsByCustomerAndDate, getCompanyNamesFromPCCustomers } from "./azureDb";
 import Papa from "papaparse";
 
 export const appRouter = router({
@@ -111,6 +111,19 @@ export const appRouter = router({
         return await testAzureConnection(config);
       }),
 
+    getCompanyNames: protectedProcedure
+      .input(z.object({
+        connectionId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        const connection = await db.getAzureConnectionById(input.connectionId);
+        if (!connection) {
+          throw new Error("Connection not found");
+        }
+        const config = createAzureConfig(connection);
+        return await getCompanyNamesFromPCCustomers(config);
+      }),
+
     getTableColumns: protectedProcedure
       .input(z.object({
         connectionId: z.number(),
@@ -208,7 +221,7 @@ export const appRouter = router({
       .input(z.object({
         jobId: z.number(),
         csvContent: z.string(),
-        importDate: z.string().optional(),
+        customerName: z.string(),
       }))
       .mutation(async ({ input }) => {
         const job = await db.getImportJobById(input.jobId);
@@ -237,7 +250,9 @@ export const appRouter = router({
           const mappings = job.fieldMappings as any;
 
           const transformedRows = csvRows.map((row: any) => {
-            const transformed: Record<string, any> = {};
+            const transformed: Record<string, any> = {
+              CustomerName: input.customerName, // Add customer name from dropdown
+            };
             
             for (const [dbField, mapping] of Object.entries(mappings)) {
               const mappingConfig = mapping as any;
@@ -271,7 +286,7 @@ export const appRouter = router({
           await db.updateImportJob(input.jobId, { totalRows: transformedRows.length });
 
           const config = createAzureConfig(connection);
-          const result = await insertRowsToAzure(config, connection.tableName, transformedRows, input.importDate);
+          const result = await insertRowsToAzure(config, connection.tableName, transformedRows);
 
           for (const error of result.errors) {
             await db.createImportLog({
