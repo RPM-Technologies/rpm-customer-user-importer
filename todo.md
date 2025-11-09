@@ -155,3 +155,10 @@
 - [x] Update APP_LOGO constant to use RPM logo
 - [x] Add copyright footer to all pages
 - [x] Update page titles and metadata with RPM branding
+
+
+## RPM Brand Color and Title Update
+
+- [x] Update primary color to #AD1111 in index.css
+- [ ] Update APP_TITLE to "RPM Customer Users Importer" in const.ts
+- [x] Test color changes across all pages
