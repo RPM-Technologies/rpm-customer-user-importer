@@ -35,6 +35,7 @@ const TARGET_FIELDS = [
   "FaxNumber",
   "PersonalMobilePhone",
   "ManagerEmail",
+  "ImportDate",
 ];
 
 type MappingPart = {

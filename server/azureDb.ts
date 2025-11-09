@@ -83,6 +83,11 @@ export async function insertRowsToAzure(
           continue;
         }
 
+        // Add ImportDate with current datetime if not already present
+        if (!row.ImportDate) {
+          row.ImportDate = new Date();
+        }
+
         // Filter out null/undefined/empty string values from the row
         const filteredRow: Record<string, any> = {};
         for (const [key, value] of Object.entries(row)) {

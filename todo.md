@@ -62,3 +62,10 @@
 - [x] Add template selector dropdown in field mapping UI
 - [x] Add template management in dialogs
 - [x] Test template save and load functionality
+
+
+## ImportDate Feature
+
+- [x] Add ImportDate to TARGET_FIELDS list
+- [x] Update import logic to automatically set ImportDate to current datetime
+- [x] Test ImportDate is correctly populated during import
