@@ -65,7 +65,8 @@ export async function getTableColumns(config: AzureDbConfig, tableName: string):
 export async function insertRowsToAzure(
   config: AzureDbConfig,
   tableName: string,
-  rows: Record<string, any>[]
+  rows: Record<string, any>[],
+  importDate?: string
 ): Promise<{ success: number; failed: number; errors: Array<{ row: number; error: string }> }> {
   let pool: sql.ConnectionPool | null = null;
   let success = 0;
@@ -83,9 +84,9 @@ export async function insertRowsToAzure(
           continue;
         }
 
-        // Add ImportDate with current datetime if not already present
+        // Add ImportDate with user-selected date or current datetime if not already present
         if (!row.ImportDate) {
-          row.ImportDate = new Date();
+          row.ImportDate = importDate ? new Date(importDate) : new Date();
         }
 
         // Filter out null/undefined/empty string values from the row

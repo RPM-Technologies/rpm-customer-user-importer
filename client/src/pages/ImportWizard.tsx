@@ -65,6 +65,7 @@ export default function ImportWizard() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [templateDescription, setTemplateDescription] = useState("");
+  const [importDate, setImportDate] = useState<string>(new Date().toISOString().split('T')[0]); // Default to current date in YYYY-MM-DD format
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: connections, isLoading: connectionsLoading } = trpc.azureConnection.list.useQuery(undefined, {
@@ -252,6 +253,7 @@ export default function ImportWizard() {
       await executeJobMutation.mutateAsync({
         jobId: jobId,
         csvContent: csvContent,
+        importDate: importDate,
       });
     } catch (error: any) {
       toast.error(`Import failed: ${error.message}`);
@@ -634,6 +636,21 @@ export default function ImportWizard() {
                       <p>File: {csvFile?.name}</p>
                       <p>Mapped Fields: {Object.keys(fieldMappings).length}</p>
                     </div>
+                  </div>
+
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2">Import Date</h4>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="importDate" className="text-sm">Select import date:</Label>
+                      <Input
+                        id="importDate"
+                        type="date"
+                        value={importDate}
+                        onChange={(e) => setImportDate(e.target.value)}
+                        className="w-48"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">This date will be recorded for all imported records</p>
                   </div>
 
                   <div className="border rounded-lg p-4">

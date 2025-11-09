@@ -208,6 +208,7 @@ export const appRouter = router({
       .input(z.object({
         jobId: z.number(),
         csvContent: z.string(),
+        importDate: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const job = await db.getImportJobById(input.jobId);
@@ -270,7 +271,7 @@ export const appRouter = router({
           await db.updateImportJob(input.jobId, { totalRows: transformedRows.length });
 
           const config = createAzureConfig(connection);
-          const result = await insertRowsToAzure(config, connection.tableName, transformedRows);
+          const result = await insertRowsToAzure(config, connection.tableName, transformedRows, input.importDate);
 
           for (const error of result.errors) {
             await db.createImportLog({

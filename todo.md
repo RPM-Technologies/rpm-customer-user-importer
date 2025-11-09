@@ -69,3 +69,12 @@
 - [x] Add ImportDate to TARGET_FIELDS list
 - [x] Update import logic to automatically set ImportDate to current datetime
 - [x] Test ImportDate is correctly populated during import
+
+
+## ImportDate Date Picker Feature
+
+- [x] Add date picker UI in import wizard for ImportDate selection
+- [x] Default ImportDate to current date
+- [x] Pass selected ImportDate to backend during import
+- [x] Update backend to use user-selected ImportDate instead of automatic current datetime
+- [x] Test date selection functionality
