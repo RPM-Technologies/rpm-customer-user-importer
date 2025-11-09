@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -743,6 +744,7 @@ export default function ImportWizard() {
           )}
         </div>
       </main>
+      <Footer />
 
       {/* Save Template Dialog */}
       <Dialog open={showSaveTemplate} onOpenChange={setShowSaveTemplate}>

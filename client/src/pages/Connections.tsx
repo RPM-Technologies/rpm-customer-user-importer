@@ -10,6 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { APP_TITLE, getLoginUrl } from "@/const";
+import Footer from "@/components/Footer";
 
 export default function Connections() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -348,6 +349,7 @@ export default function Connections() {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Database, FileSpreadsheet, History, Upload, Trash2 } from "lucide-react";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -136,6 +137,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
