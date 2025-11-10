@@ -1,0 +1,12 @@
+# Deployment Configuration Files
+# These files contain sensitive credentials and should never be committed
+
+config.env
+config.json
+
+# Backup files
+*.bak
+*.backup
+
+# Logs
+*.log

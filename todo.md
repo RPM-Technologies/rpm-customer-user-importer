@@ -164,3 +164,9 @@
 - [x] Test color changes across all pages
 
 - [x] Remove "CSV to Azure SQL Importer" heading and subtitle from main page
+
+- [x] Create Azure App Services deployment documentation with Docker configuration
+
+- [x] Create MySQL configuration guide for Azure deployment
+
+- [x] Create automated deployment scripts (Bash and PowerShell) for Azure

@@ -1,0 +1,39 @@
+{
+  "_comment": "RPM Customer User Importer - Azure Deployment Configuration",
+  "_instructions": "Copy this file to config.json and fill in your values. DO NOT commit config.json to version control.",
+  
+  "subscriptionId": "your-subscription-id-here",
+  "resourceGroup": "rpm-importer-rg",
+  "location": "eastus",
+  
+  "appName": "rpm-customer-user-importer",
+  "appServiceSku": "B1",
+  
+  "acrName": "rpmimporteracr",
+  "acrSku": "Basic",
+  
+  "mysqlServerName": "rpm-importer-mysql",
+  "mysqlAdminUser": "adminuser",
+  "mysqlAdminPassword": "YourSecurePassword123!",
+  "mysqlDatabaseName": "rpm_importer",
+  "mysqlSku": "Standard_B1ms",
+  "mysqlTier": "Burstable",
+  "mysqlVersion": "8.0.21",
+  "mysqlStorageSize": 32,
+  "mysqlBackupRetention": 7,
+  
+  "jwtSecret": "",
+  "oauthServerUrl": "",
+  "viteOAuthPortalUrl": "",
+  "viteAppId": "",
+  "ownerOpenId": "",
+  "ownerName": "",
+  "viteAppTitle": "RPM Customer User Importer",
+  "viteAppLogo": "",
+  "builtInForgeApiUrl": "",
+  "builtInForgeApiKey": "",
+  "viteFrontendForgeApiKey": "",
+  "viteFrontendForgeApiUrl": "",
+  "viteAnalyticsEndpoint": "",
+  "viteAnalyticsWebsiteId": ""
+}
