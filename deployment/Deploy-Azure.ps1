@@ -211,11 +211,11 @@ function New-MySQLDatabase {
             --location $Config.location `
             --admin-user $Config.mysqlAdminUser `
             --admin-password $Config.mysqlAdminPassword `
-            --sku-name $($Config.mysqlSku ?? "Standard_B1ms") `
-            --tier $($Config.mysqlTier ?? "Burstable") `
-            --version $($Config.mysqlVersion ?? "8.0.21") `
-            --storage-size $($Config.mysqlStorageSize ?? 32) `
-            --backup-retention $($Config.mysqlBackupRetention ?? 7) `
+            --sku-name $($Config.mysqlSku -or "Standard_B1ms") `
+            --tier $($Config.mysqlTier -or "Burstable") `
+            --version $($Config.mysqlVersion -or "8.0.21") `
+            --storage-size $($Config.mysqlStorageSize -or 32) `
+            --backup-retention $($Config.mysqlBackupRetention -or 7) `
             --public-access 0.0.0.0
         
         Write-ColorOutput "MySQL server created" -Type Success
@@ -272,7 +272,7 @@ function New-ContainerRegistry {
         az acr create `
             --resource-group $Config.resourceGroup `
             --name $Config.acrName `
-            --sku $($Config.acrSku ?? "Basic") `
+            --sku $($Config.acrSku -or "Basic") `
             --admin-enabled true
         Write-ColorOutput "Container registry created" -Type Success
     }
@@ -327,7 +327,7 @@ function New-AppServicePlan {
             --name $planName `
             --resource-group $Config.resourceGroup `
             --is-linux `
-            --sku $($Config.appServiceSku ?? "B1")
+            --sku $($Config.appServiceSku -or "B1")
         Write-ColorOutput "App Service Plan created" -Type Success
     }
 }
@@ -411,17 +411,17 @@ function Set-AppSettings {
     $settings = @(
         "DATABASE_URL=$databaseUrl",
         "JWT_SECRET=$jwtSecret",
-        "OAUTH_SERVER_URL=$($Config.oauthServerUrl ?? '')",
-        "VITE_OAUTH_PORTAL_URL=$($Config.viteOAuthPortalUrl ?? '')",
-        "VITE_APP_ID=$($Config.viteAppId ?? '')",
-        "OWNER_OPEN_ID=$($Config.ownerOpenId ?? '')",
-        "OWNER_NAME=$($Config.ownerName ?? '')",
-        "VITE_APP_TITLE=$($Config.viteAppTitle ?? 'RPM Customer User Importer')",
-        "VITE_APP_LOGO=$($Config.viteAppLogo ?? '')",
-        "BUILT_IN_FORGE_API_URL=$($Config.builtInForgeApiUrl ?? '')",
-        "BUILT_IN_FORGE_API_KEY=$($Config.builtInForgeApiKey ?? '')",
-        "VITE_FRONTEND_FORGE_API_KEY=$($Config.viteFrontendForgeApiKey ?? '')",
-        "VITE_FRONTEND_FORGE_API_URL=$($Config.viteFrontendForgeApiUrl ?? '')",
+        "OAUTH_SERVER_URL=$($Config.oauthServerUrl -or '')",
+        "VITE_OAUTH_PORTAL_URL=$($Config.viteOAuthPortalUrl -or '')",
+        "VITE_APP_ID=$($Config.viteAppId -or '')",
+        "OWNER_OPEN_ID=$($Config.ownerOpenId -or '')",
+        "OWNER_NAME=$($Config.ownerName -or '')",
+        "VITE_APP_TITLE=$($Config.viteAppTitle -or 'RPM Customer User Importer')",
+        "VITE_APP_LOGO=$($Config.viteAppLogo -or '')",
+        "BUILT_IN_FORGE_API_URL=$($Config.builtInForgeApiUrl -or '')",
+        "BUILT_IN_FORGE_API_KEY=$($Config.builtInForgeApiKey -or '')",
+        "VITE_FRONTEND_FORGE_API_KEY=$($Config.viteFrontendForgeApiKey -or '')",
+        "VITE_FRONTEND_FORGE_API_URL=$($Config.viteFrontendForgeApiUrl -or '')",
         "WEBSITES_PORT=3000"
     )
     
