@@ -170,3 +170,5 @@
 - [x] Create MySQL configuration guide for Azure deployment
 
 - [x] Create automated deployment scripts (Bash and PowerShell) for Azure
+
+- [x] Create Ubuntu server deployment script for Docker container with port 8080:8443
