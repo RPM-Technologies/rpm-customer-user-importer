@@ -183,4 +183,6 @@
 
 - [x] Configure Azure Entra ID (Azure AD) authentication for single sign-on
 
-- [ ] Deploy Azure Entra ID authentication with App ID a44431bc-695a-4b44-a2ab-1617f636f773
+- [x] Deploy Azure Entra ID authentication with App ID a44431bc-695a-4b44-a2ab-1617f636f773
+
+- [x] Remove all Manus references and make application standalone with Azure AD only

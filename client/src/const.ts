@@ -4,18 +4,12 @@ export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "App";
 
 export const APP_LOGO = "/rpm-logo.jpg";
 
-// Generate login URL at runtime so redirect URI reflects the current origin.
+// Generate Azure AD login URL
 export const getLoginUrl = () => {
-  const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
-  const appId = import.meta.env.VITE_APP_ID;
-  const redirectUri = `${window.location.origin}/api/oauth/callback`;
-  const state = btoa(redirectUri);
+  return `${window.location.origin}/api/auth/login`;
+};
 
-  const url = new URL(`${oauthPortalUrl}/app-auth`);
-  url.searchParams.set("appId", appId);
-  url.searchParams.set("redirectUri", redirectUri);
-  url.searchParams.set("state", state);
-  url.searchParams.set("type", "signIn");
-
-  return url.toString();
+// Generate logout URL
+export const getLogoutUrl = () => {
+  return `${window.location.origin}/api/auth/logout`;
 };

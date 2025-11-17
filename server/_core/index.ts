@@ -4,7 +4,6 @@ import session from "express-session";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import passport from "../auth/azureAuth";
@@ -62,10 +61,8 @@ async function startServer() {
     // Register Azure AD authentication routes
     app.use('/api/auth', authRoutes);
   } else {
-    console.log('[Auth] Azure AD not configured, using Manus OAuth');
+    console.log('[Auth] Azure AD not configured - authentication disabled');
   }
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",

@@ -1,15 +1,14 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
+
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
-import { storagePut } from "./storage";
+
 import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure, getDistinctCustomers, getDistinctImportDates, deleteRecordsByCustomerAndDate, getCompanyNamesFromPCCustomers } from "./azureDb";
 import Papa from "papaparse";
 
 export const appRouter = router({
-  system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -146,10 +145,10 @@ export const appRouter = router({
         fileContent: z.string(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // CSV content is passed directly, no storage needed
         const fileKey = `csv-uploads/${ctx.user.id}/${Date.now()}-${input.fileName}`;
-        const { url } = await storagePut(fileKey, input.fileContent, "text/csv");
         
-        return { url, fileKey };
+        return { url: '', fileKey };
       }),
 
     parse: protectedProcedure
