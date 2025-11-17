@@ -38,19 +38,24 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   
   // Session configuration for Azure AD
+  // Trust proxy for secure cookies behind Nginx
+  app.set('trust proxy', 1);
+  
   if (ENV.azureClientId && ENV.azureClientSecret && ENV.azureTenantId) {
     console.log('[Auth] Configuring Azure Entra ID authentication');
     app.use(
       session({
         secret: ENV.cookieSecret || 'fallback-secret-change-me',
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true, // Changed to true to ensure session is created
         cookie: {
-          secure: ENV.isProduction,
+          secure: true, // Always true for HTTPS
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // 24 hours
           sameSite: 'lax',
+          path: '/',
         },
+        name: 'rpm.sid', // Custom session cookie name
       })
     );
     

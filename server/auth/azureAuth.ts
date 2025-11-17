@@ -16,6 +16,12 @@ const azureConfig = {
   passReqToCallback: false,
   scope: ['profile', 'email', 'openid'],
   loggingLevel: 'info' as const,
+  nonceLifetime: 3600, // 1 hour
+  nonceMaxAmount: 10,
+  useCookieInsteadOfSession: false, // Use session for state management
+  cookieEncryptionKeys: [
+    { key: ENV.cookieSecret.substring(0, 32), iv: ENV.cookieSecret.substring(0, 12) }
+  ],
 };
 
 // Configure Passport Azure AD strategy

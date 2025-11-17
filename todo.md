@@ -186,3 +186,7 @@
 - [x] Deploy Azure Entra ID authentication with App ID a44431bc-695a-4b44-a2ab-1617f636f773
 
 - [x] Remove all Manus references and make application standalone with Azure AD only
+
+- [ ] Fix Azure AD authentication error AADSTS700054 - enable ID tokens in app registration
+
+- [x] Fix Azure AD 'invalid state' error - configure session and cookie settings properly
