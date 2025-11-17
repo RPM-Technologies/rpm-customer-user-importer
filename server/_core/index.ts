@@ -1,11 +1,15 @@
 import "dotenv/config";
 import express from "express";
+import session from "express-session";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import passport from "../auth/azureAuth";
+import authRoutes from "../routes/auth";
+import { ENV } from "./env";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -33,6 +37,33 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  
+  // Session configuration for Azure AD
+  if (ENV.azureClientId && ENV.azureClientSecret && ENV.azureTenantId) {
+    console.log('[Auth] Configuring Azure Entra ID authentication');
+    app.use(
+      session({
+        secret: ENV.cookieSecret || 'fallback-secret-change-me',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          secure: ENV.isProduction,
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours
+          sameSite: 'lax',
+        },
+      })
+    );
+    
+    // Initialize Passport
+    app.use(passport.initialize());
+    app.use(passport.session());
+    
+    // Register Azure AD authentication routes
+    app.use('/api/auth', authRoutes);
+  } else {
+    console.log('[Auth] Azure AD not configured, using Manus OAuth');
+  }
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API

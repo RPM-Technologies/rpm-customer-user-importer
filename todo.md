@@ -172,3 +172,15 @@
 - [x] Create automated deployment scripts (Bash and PowerShell) for Azure
 
 - [x] Create Ubuntu server deployment script for Docker container with port 8080:8443
+
+- [ ] Update deployment script to use /opt/customer-importer directory
+
+- [x] Set up Nginx reverse proxy with Let's Encrypt SSL for rpm-importer-dev.rpmit.com on ports 8080:8443
+
+- [x] Obtain and install Let's Encrypt SSL certificate for rpm-importer-dev.rpmit.com
+
+- [x] Fix "Invalid URL" error by configuring production environment variables
+
+- [x] Configure Azure Entra ID (Azure AD) authentication for single sign-on
+
+- [ ] Deploy Azure Entra ID authentication with App ID a44431bc-695a-4b44-a2ab-1617f636f773

@@ -7,4 +7,9 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // Azure Entra ID
+  azureTenantId: process.env.AZURE_TENANT_ID ?? "",
+  azureClientId: process.env.AZURE_CLIENT_ID ?? "",
+  azureClientSecret: process.env.AZURE_CLIENT_SECRET ?? "",
+  appBaseUrl: process.env.APP_BASE_URL ?? "http://localhost:3000",
 };
