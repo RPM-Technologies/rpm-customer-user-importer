@@ -190,3 +190,5 @@
 - [ ] Fix Azure AD authentication error AADSTS700054 - enable ID tokens in app registration
 
 - [x] Fix Azure AD 'invalid state' error - configure session and cookie settings properly
+
+- [ ] Implement MySQL-backed session store to replace MemoryStore and fix Azure AD state persistence

@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import session from "express-session";
+import MySQLStoreFactory from "express-mysql-session";
+import mysql from "mysql2/promise";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -43,9 +45,32 @@ async function startServer() {
   
   if (ENV.azureClientId && ENV.azureClientSecret && ENV.azureTenantId) {
     console.log('[Auth] Configuring Azure Entra ID authentication');
+    
+    // Create MySQL session store
+    const MySQLStore = MySQLStoreFactory(session);
+    const sessionStore = new MySQLStore({
+      host: process.env.MYSQL_HOST || 'localhost',
+      port: parseInt(process.env.MYSQL_PORT || '3306'),
+      user: process.env.MYSQL_USER || 'root',
+      password: process.env.MYSQL_PASSWORD || '',
+      database: process.env.MYSQL_DATABASE || 'customer_importer',
+      createDatabaseTable: true, // Automatically create sessions table
+      schema: {
+        tableName: 'sessions',
+        columnNames: {
+          session_id: 'session_id',
+          expires: 'expires',
+          data: 'data'
+        }
+      }
+    });
+    
+    console.log('[Session] Using MySQL session store');
+    
     app.use(
       session({
         secret: ENV.cookieSecret || 'fallback-secret-change-me',
+        store: sessionStore,
         resave: false,
         saveUninitialized: true, // Changed to true to ensure session is created
         cookie: {
