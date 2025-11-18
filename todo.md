@@ -214,3 +214,12 @@
 - [x] Create user management UI page with add/delete functionality
 - [x] Add admin-only access control for user management
 
+
+- [x] Fix Azure AD environment variables not loading in production container
+
+
+- [x] Fix .env.production file persistence during container restarts
+
+
+- [x] Create startup script for easy deployment and initialization
+
