@@ -238,5 +238,5 @@
 
 - [x] Fix logout to properly clear Azure AD session and prevent automatic re-login
 
-- [ ] Fix logout to properly clear session cookies and prevent unauthorized access to protected pages
+- [x] Fix logout to properly clear session cookies and prevent unauthorized access to protected pages
 
