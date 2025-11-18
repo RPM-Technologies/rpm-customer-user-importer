@@ -72,15 +72,18 @@ async function startServer() {
         secret: ENV.cookieSecret || 'fallback-secret-change-me',
         store: sessionStore,
         resave: false,
-        saveUninitialized: true, // Changed to true to ensure session is created
+        saveUninitialized: true, // Must be true for Azure AD state management
+        proxy: true, // Trust the reverse proxy
         cookie: {
-          secure: true, // Always true for HTTPS
+          secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // 24 hours
           sameSite: 'lax',
           path: '/',
+          domain: undefined, // Let browser set domain automatically
         },
         name: 'rpm.sid', // Custom session cookie name
+        rolling: true, // Reset expiration on every request
       })
     );
     

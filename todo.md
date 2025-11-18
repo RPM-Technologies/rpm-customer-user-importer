@@ -191,4 +191,7 @@
 
 - [x] Fix Azure AD 'invalid state' error - configure session and cookie settings properly
 
-- [ ] Implement MySQL-backed session store to replace MemoryStore and fix Azure AD state persistence
+- [x] Implement MySQL-backed session store to replace MemoryStore and fix Azure AD state persistence
+
+- [ ] Fix session cookie settings for Nginx proxy environment - adjust secure/sameSite settings
+
