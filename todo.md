@@ -193,5 +193,7 @@
 
 - [x] Implement MySQL-backed session store to replace MemoryStore and fix Azure AD state persistence
 
-- [ ] Fix session cookie settings for Nginx proxy environment - adjust secure/sameSite settings
+- [x] Fix session cookie settings for Nginx proxy environment - adjust secure/sameSite settings
+
+- [ ] Switch Azure AD to cookie-based state storage instead of session-based
 

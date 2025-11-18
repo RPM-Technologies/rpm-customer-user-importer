@@ -18,10 +18,11 @@ const azureConfig = {
   loggingLevel: 'info' as const,
   nonceLifetime: 3600, // 1 hour
   nonceMaxAmount: 10,
-  useCookieInsteadOfSession: false, // Use session for state management
+  useCookieInsteadOfSession: true, // Use cookies for state management (more reliable)
   cookieEncryptionKeys: [
     { key: ENV.cookieSecret.substring(0, 32), iv: ENV.cookieSecret.substring(0, 12) }
   ],
+  cookieSameSite: true, // Enable SameSite cookie attribute
 };
 
 // Configure Passport Azure AD strategy
