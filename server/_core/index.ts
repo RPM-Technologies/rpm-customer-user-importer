@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 import MySQLStoreFactory from "express-mysql-session";
 import mysql from "mysql2/promise";
 import { createServer } from "http";
@@ -38,6 +39,9 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  
+  // Cookie parser middleware (required for Azure AD cookie-based state)
+  app.use(cookieParser(ENV.cookieSecret));
   
   // Session configuration for Azure AD
   // Trust proxy for secure cookies behind Nginx

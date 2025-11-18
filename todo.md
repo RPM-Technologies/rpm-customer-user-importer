@@ -197,3 +197,6 @@
 
 - [x] Switch Azure AD to cookie-based state storage instead of session-based
 
+
+- [ ] Add cookie-parser middleware for Azure AD cookie-based authentication
+
