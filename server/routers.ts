@@ -19,15 +19,41 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
-      // Return Azure AD logout URL to clear Azure session
-      const tenantId = process.env.AZURE_TENANT_ID;
-      const postLogoutRedirectUri = encodeURIComponent(process.env.APP_BASE_URL || 'https://rpm-importer-dev.rpmit.com:8443');
-      const azureLogoutUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${postLogoutRedirectUri}`;
-      
-      return {
-        success: true,
-        logoutUrl: azureLogoutUrl,
-      } as const;
+      return new Promise((resolve, reject) => {
+        // Logout from Passport session
+        ctx.req.logout((err) => {
+          if (err) {
+            console.error('[Auth] Logout error:', err);
+            reject(err);
+            return;
+          }
+          
+          // Destroy the session
+          ctx.req.session.destroy((destroyErr) => {
+            if (destroyErr) {
+              console.error('[Auth] Session destroy error:', destroyErr);
+            }
+            
+            // Clear the session cookie
+            ctx.res.clearCookie('connect.sid', {
+              path: '/',
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+            });
+            
+            // Return Azure AD logout URL to clear Azure session
+            const tenantId = process.env.AZURE_TENANT_ID;
+            const postLogoutRedirectUri = encodeURIComponent(process.env.APP_BASE_URL || 'https://rpm-importer-dev.rpmit.com:8443');
+            const azureLogoutUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${postLogoutRedirectUri}`;
+            
+            resolve({
+              success: true,
+              logoutUrl: azureLogoutUrl,
+            } as const);
+          });
+        });
+      });
     }),
   }),
 
