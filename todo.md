@@ -206,3 +206,11 @@
 
 - [x] Create users table in production database
 
+
+## User Management
+
+- [x] Add tRPC procedures for user management (list, add, delete)
+- [x] Update authentication to only allow existing users to login
+- [x] Create user management UI page with add/delete functionality
+- [x] Add admin-only access control for user management
+

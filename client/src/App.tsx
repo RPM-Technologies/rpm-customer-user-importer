@@ -10,6 +10,7 @@ import ImportWizard from "./pages/ImportWizard";
 import ImportHistory from "./pages/ImportHistory";
 import DataCleanup from "./pages/DataCleanup";
 import AuditLogs from "./pages/AuditLogs";
+import Users from "./pages/Users";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path={"/history"} component={ImportHistory} />
       <Route path={"/cleanup"} component={DataCleanup} />
       <Route path={"/audit-logs"} component={AuditLogs} />
+      <Route path={"/users"} component={Users} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

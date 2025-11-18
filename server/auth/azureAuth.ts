@@ -35,20 +35,48 @@ passport.use(
     async (profile: IProfile, done: VerifyCallback) => {
       try {
         // Extract user information from Azure AD profile
-        const azureUser = {
-          openId: profile.oid || profile._json.oid, // Azure AD object ID
-          email: profile._json.email || profile._json.preferred_username || '',
-          name: profile.displayName || '',
+        const openId = profile.oid || profile._json.oid;
+        const email = profile._json.email || profile._json.preferred_username || '';
+        const name = profile.displayName || '';
+
+        // Check if user exists in database by email or openId
+        let user = await getUserByOpenId(openId);
+        
+        if (!user && email) {
+          // Try to find by email (for users added before first login)
+          const { getUserByEmail } = await import('../db');
+          user = await getUserByEmail(email);
+          
+          if (user && user.openId.startsWith('pending_')) {
+            // Update the placeholder openId with real Azure AD openId
+            const azureUser = {
+              openId: openId,
+              email: email,
+              name: name,
+              loginMethod: 'azure-ad' as const,
+              lastSignedIn: new Date(),
+            };
+            await upsertUser(azureUser);
+            user = await getUserByOpenId(openId);
+          }
+        }
+
+        // Only allow login if user exists in database
+        if (!user) {
+          console.warn(`[Azure Auth] Login denied for ${email} - user not found in database`);
+          return done(new Error('Access denied. Please contact an administrator to request access.'));
+        }
+
+        // Update last sign-in time
+        await upsertUser({
+          openId: user.openId,
+          email: email,
+          name: name,
           loginMethod: 'azure-ad',
-        };
+          lastSignedIn: new Date(),
+        });
 
-        // Upsert user in database
-        await upsertUser(azureUser);
-
-        // Get full user record
-        const user = await getUserByOpenId(azureUser.openId);
-
-        return done(null, user || azureUser);
+        return done(null, user);
       } catch (error) {
         console.error('[Azure Auth] Error processing user:', error);
         return done(error as Error);

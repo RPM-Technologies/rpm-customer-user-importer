@@ -7,6 +7,14 @@ import * as db from "./db";
 import { createAzureConfig, testAzureConnection, getTableColumns, insertRowsToAzure, getDistinctCustomers, getDistinctImportDates, deleteRecordsByCustomerAndDate, getCompanyNamesFromPCCustomers } from "./azureDb";
 import Papa from "papaparse";
 
+// Admin-only procedure
+const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== 'admin') {
+    throw new Error('Unauthorized: Admin access required');
+  }
+  return next({ ctx });
+});
+
 export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -16,6 +24,50 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+  }),
+
+  users: router({
+    list: adminProcedure.query(async () => {
+      return await db.getAllUsers();
+    }),
+
+    add: adminProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+        role: z.enum(['user', 'admin']).default('user'),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if user already exists
+        const existing = await db.getUserByEmail(input.email);
+        if (existing) {
+          throw new Error('User with this email already exists');
+        }
+
+        // Create user with a placeholder openId (will be updated on first login)
+        const result = await db.createUser({
+          openId: `pending_${input.email}`, // Temporary openId
+          email: input.email,
+          name: input.name || input.email,
+          role: input.role,
+          loginMethod: 'azure-ad',
+        });
+        return result;
+      }),
+
+    delete: adminProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Prevent deleting yourself
+        if (input.id === ctx.user.id) {
+          throw new Error('Cannot delete your own account');
+        }
+        
+        await db.deleteUserById(input.id);
+        return { success: true };
+      }),
   }),
 
   azureConnection: router({
