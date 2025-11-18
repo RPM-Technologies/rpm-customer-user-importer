@@ -198,5 +198,11 @@
 - [x] Switch Azure AD to cookie-based state storage instead of session-based
 
 
-- [ ] Add cookie-parser middleware for Azure AD cookie-based authentication
+- [x] Add cookie-parser middleware for Azure AD cookie-based authentication
+
+
+- [x] Update Azure client secret in production environment
+
+
+- [x] Create users table in production database
 
