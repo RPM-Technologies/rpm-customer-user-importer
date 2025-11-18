@@ -19,9 +19,14 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
-      // Logout is handled by /api/auth/logout endpoint
+      // Return Azure AD logout URL to clear Azure session
+      const tenantId = process.env.AZURE_TENANT_ID;
+      const postLogoutRedirectUri = encodeURIComponent(process.env.APP_BASE_URL || 'https://rpm-importer-dev.rpmit.com:8443');
+      const azureLogoutUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${postLogoutRedirectUri}`;
+      
       return {
         success: true,
+        logoutUrl: azureLogoutUrl,
       } as const;
     }),
   }),

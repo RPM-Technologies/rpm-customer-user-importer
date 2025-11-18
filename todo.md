@@ -235,3 +235,6 @@
 
 - [x] Update Home page to use DashboardLayout for navigation and logout access
 
+
+- [x] Fix logout to properly clear Azure AD session and prevent automatic re-login
+

@@ -26,18 +26,25 @@ export function useAuth(options?: UseAuthOptions) {
 
   const logout = useCallback(async () => {
     try {
-      await logoutMutation.mutateAsync();
+      const result = await logoutMutation.mutateAsync();
+      // Clear local state
+      utils.auth.me.setData(undefined, null);
+      localStorage.removeItem("user-info");
+      // Redirect to Azure AD logout to clear Azure session
+      if (result.logoutUrl) {
+        window.location.href = result.logoutUrl;
+      } else {
+        window.location.href = getLoginUrl();
+      }
     } catch (error: unknown) {
       if (
         error instanceof TRPCClientError &&
         error.data?.code === "UNAUTHORIZED"
       ) {
+        window.location.href = getLoginUrl();
         return;
       }
       throw error;
-    } finally {
-      utils.auth.me.setData(undefined, null);
-      await utils.auth.me.invalidate();
     }
   }, [logoutMutation, utils]);
 
