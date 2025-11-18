@@ -229,3 +229,9 @@
 
 - [x] Perform complete clean deployment from scratch
 
+
+- [ ] Fix VITE_APP_TITLE and other VITE environment variables in production build
+
+
+- [x] Update Home page to use DashboardLayout for navigation and logout access
+

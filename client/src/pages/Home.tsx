@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Database, FileSpreadsheet, History, Upload, Trash2 } from "lucide-react";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import Footer from "@/components/Footer";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -55,82 +55,77 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">{APP_TITLE}</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Welcome, {user?.name || user?.email}</span>
-          </div>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Welcome to {APP_TITLE}</h1>
+          <p className="text-muted-foreground mt-2">
+            Import CSV files to Azure SQL Database with flexible field mapping
+          </p>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <Database className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Manage Connections</CardTitle>
-                <CardDescription>
-                  Configure and test your Azure SQL database connections
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" asChild>
-                  <Link href="/connections">Manage Connections</Link>
-                </Button>
-              </CardContent>
-            </Card>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Database className="h-12 w-12 text-primary mb-4" />
+              <CardTitle>Manage Connections</CardTitle>
+              <CardDescription>
+                Configure and test your Azure SQL database connections
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" asChild>
+                <Link href="/connections">Manage Connections</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <Upload className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Import CSV</CardTitle>
-                <CardDescription>
-                  Upload CSV files and map fields to your database tables
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" asChild>
-                  <Link href="/import">Start Import</Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Upload className="h-12 w-12 text-primary mb-4" />
+              <CardTitle>Import CSV</CardTitle>
+              <CardDescription>
+                Upload CSV files and map fields to your database tables
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" asChild>
+                <Link href="/import">Start Import</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <History className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Import History</CardTitle>
-                <CardDescription>
-                  View past imports and check their status and logs
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link href="/history">View History</Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <History className="h-12 w-12 text-primary mb-4" />
+              <CardTitle>Import History</CardTitle>
+              <CardDescription>
+                View past imports and check their status and logs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline" asChild>
+                <Link href="/history">View History</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <Trash2 className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Data Cleanup</CardTitle>
-                <CardDescription>
-                  Remove imported records by customer and import date
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link href="/cleanup">Cleanup Data</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Trash2 className="h-12 w-12 text-primary mb-4" />
+              <CardTitle>Data Cleanup</CardTitle>
+              <CardDescription>
+                Remove imported records by customer and import date
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline" asChild>
+                <Link href="/cleanup">Cleanup Data</Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
