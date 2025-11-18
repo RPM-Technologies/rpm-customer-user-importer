@@ -20,7 +20,10 @@ const azureConfig = {
   nonceMaxAmount: 10,
   useCookieInsteadOfSession: true, // Use cookies for state management (more reliable)
   cookieEncryptionKeys: [
-    { key: ENV.cookieSecret.substring(0, 32), iv: ENV.cookieSecret.substring(0, 12) }
+    { 
+      key: Buffer.from(ENV.cookieSecret.substring(0, 32).padEnd(32, '0'), 'utf8'),
+      iv: Buffer.from(ENV.cookieSecret.substring(0, 12).padEnd(12, '0'), 'utf8')
+    }
   ],
   cookieSameSite: true, // Enable SameSite cookie attribute
 };

@@ -195,5 +195,5 @@
 
 - [x] Fix session cookie settings for Nginx proxy environment - adjust secure/sameSite settings
 
-- [ ] Switch Azure AD to cookie-based state storage instead of session-based
+- [x] Switch Azure AD to cookie-based state storage instead of session-based
 
