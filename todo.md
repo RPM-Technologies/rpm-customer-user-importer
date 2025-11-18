@@ -226,3 +226,6 @@
 
 - [x] Fix MySQL session store SSL/TLS certificate error by disabling SSL for local connections
 
+
+- [x] Perform complete clean deployment from scratch
+
