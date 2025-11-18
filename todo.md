@@ -223,3 +223,6 @@
 
 - [x] Create startup script for easy deployment and initialization
 
+
+- [x] Fix MySQL session store SSL/TLS certificate error by disabling SSL for local connections
+

@@ -59,6 +59,7 @@ async function startServer() {
       password: process.env.MYSQL_PASSWORD || '',
       database: process.env.MYSQL_DATABASE || 'customer_importer',
       createDatabaseTable: true, // Automatically create sessions table
+      ssl: false, // Disable SSL for local MySQL connections
       schema: {
         tableName: 'sessions',
         columnNames: {
