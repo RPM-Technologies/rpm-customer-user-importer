@@ -180,7 +180,21 @@ export async function createImportJob(job: InsertImportJob) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(importJobs).values(job);
+  // Explicitly construct the insert values, excluding auto-generated fields
+  const insertData: InsertImportJob = {
+    userId: job.userId,
+    connectionId: job.connectionId,
+    fileName: job.fileName,
+    fileUrl: job.fileUrl,
+    status: job.status ?? 'pending',
+    totalRows: job.totalRows ?? 0,
+    processedRows: job.processedRows ?? 0,
+    failedRows: job.failedRows ?? 0,
+    errorMessage: job.errorMessage,
+    fieldMappings: job.fieldMappings,
+  };
+  
+  const result = await db.insert(importJobs).values(insertData);
   return result;
 }
 
@@ -211,7 +225,16 @@ export async function createImportLog(log: InsertImportLog) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  return await db.insert(importLogs).values(log);
+  // Explicitly construct the insert values, excluding auto-generated fields
+  const insertData: InsertImportLog = {
+    jobId: log.jobId,
+    rowNumber: log.rowNumber,
+    level: log.level ?? 'info',
+    message: log.message,
+    rowData: log.rowData,
+  };
+  
+  return await db.insert(importLogs).values(insertData);
 }
 
 export async function getImportLogsByJobId(jobId: number) {
@@ -225,7 +248,16 @@ export async function getImportLogsByJobId(jobId: number) {
 export async function createMappingTemplate(template: InsertMappingTemplate) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(mappingTemplates).values(template);
+  
+  // Explicitly construct the insert values, excluding auto-generated fields
+  const insertData: InsertMappingTemplate = {
+    userId: template.userId,
+    name: template.name,
+    description: template.description,
+    mappings: template.mappings,
+  };
+  
+  const result = await db.insert(mappingTemplates).values(insertData);
   return result;
 }
 
@@ -257,7 +289,17 @@ export async function createCleanupAuditLog(log: InsertCleanupAuditLog) {
     throw new Error("Database not available");
   }
   
-  const result = await db.insert(cleanupAuditLogs).values(log);
+  // Explicitly construct the insert values, excluding auto-generated fields
+  const insertData: InsertCleanupAuditLog = {
+    userId: log.userId,
+    connectionId: log.connectionId,
+    customerName: log.customerName,
+    importDate: log.importDate,
+    deletedCount: log.deletedCount,
+    tableName: log.tableName,
+  };
+  
+  const result = await db.insert(cleanupAuditLogs).values(insertData);
   return result;
 }
 

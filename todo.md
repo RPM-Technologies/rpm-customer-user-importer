@@ -241,4 +241,6 @@
 - [x] Fix logout to properly clear session cookies and prevent unauthorized access to protected pages
 
 
-- [ ] Fix database connection creation error - insert into azure_connections table failing
+- [x] Fix database connection creation error - insert into azure_connections table failing
+
+- [ ] Fix import_jobs insert error - same issue with auto-generated fields
