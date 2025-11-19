@@ -1,0 +1,29 @@
+{
+  "query": "SHOW CREATE TABLE azure_connections",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TYxsobBhgGiaoJ.root --database YbzpRcF2GvdBa5fFrTrv82 --execute SHOW CREATE TABLE azure_connections",
+  "rows": [
+    {
+      "Table": "azure_connections",
+      "Create Table": "CREATE TABLE `azure_connections` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `userId` int(11) NOT NULL,",
+    "  `name` varchar(255) NOT NULL,",
+    "  `server` varchar(255) NOT NULL,",
+    "  `database` varchar(255) NOT NULL,",
+    "  `username` varchar(255) NOT NULL,",
+    "  `password` text NOT NULL,",
+    "  `port` int(11) NOT NULL DEFAULT '1433',",
+    "  `tableName` varchar(255) NOT NULL,",
+    "  `isActive` tinyint(1) NOT NULL DEFAULT '1',",
+    "  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001"
+  ],
+  "stdout": "Table\tCreate Table\nazure_connections\tCREATE TABLE `azure_connections` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `userId` int(11) NOT NULL,\n  `name` varchar(255) NOT NULL,\n  `server` varchar(255) NOT NULL,\n  `database` varchar(255) NOT NULL,\n  `username` varchar(255) NOT NULL,\n  `password` text NOT NULL,\n  `port` int(11) NOT NULL DEFAULT '1433',\n  `tableName` varchar(255) NOT NULL,\n  `isActive` tinyint(1) NOT NULL DEFAULT '1',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001\n",
+  "stderr": "",
+  "execution_time_ms": 173
+}

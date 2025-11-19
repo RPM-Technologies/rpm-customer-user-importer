@@ -130,7 +130,19 @@ export async function createAzureConnection(connection: InsertAzureConnection) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(azureConnections).values(connection);
+  // Explicitly construct the insert values, excluding auto-generated fields
+  const insertData: InsertAzureConnection = {
+    userId: connection.userId,
+    name: connection.name,
+    server: connection.server,
+    database: connection.database,
+    username: connection.username,
+    password: connection.password,
+    port: connection.port ?? 1433,
+    tableName: connection.tableName,
+  };
+  
+  const result = await db.insert(azureConnections).values(insertData);
   return result;
 }
 
