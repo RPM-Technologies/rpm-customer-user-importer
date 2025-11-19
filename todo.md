@@ -243,4 +243,7 @@
 
 - [x] Fix database connection creation error - insert into azure_connections table failing
 
-- [ ] Fix import_jobs insert error - same issue with auto-generated fields
+- [x] Fix import_jobs insert error - same issue with auto-generated fields
+- [x] Fix all database insert operations (import_logs, mapping_templates, cleanup_audit_logs)
+
+- [ ] Fix date conversion error when importing to Azure SQL - "Conversion failed when converting date and/or time from character string"

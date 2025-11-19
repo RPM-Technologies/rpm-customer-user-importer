@@ -110,6 +110,14 @@ export async function insertRowsToAzure(
             request.input(`param${idx}`, sql.Int, value);
           } else if (value instanceof Date) {
             request.input(`param${idx}`, sql.DateTime, value);
+          } else if (col === 'ImportDate' && typeof value === 'string') {
+            // ImportDate comes as a string (YYYY-MM-DD), convert to Date for SQL Server
+            const dateValue = new Date(value);
+            request.input(`param${idx}`, sql.DateTime, dateValue);
+          } else if (col === 'EmployeeHireDate' && typeof value === 'string') {
+            // EmployeeHireDate might also need date conversion
+            const dateValue = new Date(value);
+            request.input(`param${idx}`, sql.DateTime, dateValue);
           } else {
             // All values here are already non-empty due to filtering above
             request.input(`param${idx}`, sql.NVarChar, String(value));
