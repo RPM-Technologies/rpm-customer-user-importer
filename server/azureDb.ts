@@ -110,14 +110,25 @@ export async function insertRowsToAzure(
             request.input(`param${idx}`, sql.Int, value);
           } else if (value instanceof Date) {
             request.input(`param${idx}`, sql.DateTime, value);
-          } else if (col === 'ImportDate' && typeof value === 'string') {
-            // ImportDate comes as a string (YYYY-MM-DD), convert to Date for SQL Server
-            const dateValue = new Date(value);
-            request.input(`param${idx}`, sql.DateTime, dateValue);
-          } else if (col === 'EmployeeHireDate' && typeof value === 'string') {
-            // EmployeeHireDate might also need date conversion
-            const dateValue = new Date(value);
-            request.input(`param${idx}`, sql.DateTime, dateValue);
+          } else if ((col === 'ImportDate' || col === 'EmployeeHireDate') && typeof value === 'string') {
+            // Convert date strings to Date objects for SQL Server
+            try {
+              const dateValue = new Date(value);
+              // Validate date is within SQL Server DATETIME range (1753-01-01 to 9999-12-31)
+              // and is a valid date (not NaN)
+              if (isNaN(dateValue.getTime())) {
+                console.warn(`[Azure SQL] Invalid date for ${col}: ${value}, using NULL`);
+                request.input(`param${idx}`, sql.DateTime, null);
+              } else if (dateValue.getFullYear() < 1753 || dateValue.getFullYear() > 9999) {
+                console.warn(`[Azure SQL] Date out of range for ${col}: ${value}, using NULL`);
+                request.input(`param${idx}`, sql.DateTime, null);
+              } else {
+                request.input(`param${idx}`, sql.DateTime, dateValue);
+              }
+            } catch (error) {
+              console.warn(`[Azure SQL] Error parsing date for ${col}: ${value}, using NULL`);
+              request.input(`param${idx}`, sql.DateTime, null);
+            }
           } else {
             // All values here are already non-empty due to filtering above
             request.input(`param${idx}`, sql.NVarChar, String(value));
